@@ -20,7 +20,7 @@ class CountryListController extends Controller
         $r = array_count_values($country);
         arsort($r);
         $result =  array_slice($r,0,10);
-        
+
         return $result;
     }
 
@@ -51,12 +51,12 @@ class CountryListController extends Controller
             }
             try{
                 $value =  $countriesWithCount[ $v->name ];
-                $result[ $v->region ] = $contin + $value ; 
+                $result[ $v->region ] = $contin + $value ;
             }
             catch (\Exception $e){
                 $contin = 0;
             }
-        } 
+        }
         return $result;
     }
 
@@ -76,39 +76,39 @@ class CountryListController extends Controller
         return $country;
     }
 
-    function Table2(){
-        $countries = array();
-        $result = array();
-        $array = array();
-        $jsonurl2 = "https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json";
-        $json2 = file_get_contents($jsonurl2);
-        $continents = json_decode($json2);
-        foreach($continents as $con){
-            if($con->region == "Europe"){
-                array_push($array,$con->name);
-            }
-        }
-        echo(count($array)."\n");
-
-        
-
+    function table2(){
+        $countries=[];
+        $result = [];
         $jsonurl1 = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
         $json1 = file_get_contents($jsonurl1);
+        $jsonurl2 = "https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json";
+        $json2 = file_get_contents($jsonurl2);
         $universities = json_decode($json1);
-         foreach($universities as $v){
-            array_push($countries,$v->country);
+        $continents = json_decode($json2, true);
+        $result = array();
+        $tempArray = [];
+        foreach($continents as $key => $v){
+            $name = $v['name'];
+            if($v['region'] == 'Europe'){
+                $result[$name] =  $v['country-code'];
+                array_push($tempArray, $name);
+            }
         }
-
-        $result = array_intersect($array,$countries);
-        return $result;
-        foreach($universities as $v){
-            array_push($countries,$v->country);
+        $tempData = [];
+        foreach($universities as $v)
+        {
+            if(in_array($v->country, $tempArray ) ){
+                $tempData[] = ([ 'country' => $v->country, 'universityName' => $v->name, 'countryCode' => $result[ $v->country ]  ]);
+                // print_r(json_encode($tempData));
+            }
         }
+        return $tempData;
     }
 
-}
-        
-     
-        
 
-    
+}
+
+
+
+
+
