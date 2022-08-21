@@ -15,15 +15,21 @@ class CountryListController extends Controller
         $values = json_decode($json);
         // echo(count($values));
         foreach($values as $v){
-        array_push($country,$v->country);
+            array_push($country,$v->country);
         }
         $r = array_count_values($country);
         arsort($r);
         $result =  array_slice($r,0,10);
+        $values = $countries = $finalResult = [];
 
-        return $result;
+        foreach($result as $key => $data){
+            $finalResult['values'][] = $data;
+            $finalResult['countries'][] = $key;
+        }
+        return $finalResult;
+
+
     }
-
     function Chart2(){
 
         $countries=[];
@@ -57,7 +63,57 @@ class CountryListController extends Controller
                 $contin = 0;
             }
         }
-        return $result;
+        $values = $countries = $finalResult = [];
+
+        foreach($result as $key => $data){
+            $finalResult['values'][] = $data;
+            $finalResult['countries'][] = $key;
+        }
+        return $finalResult;
+//        return $result;
+    }
+    function Chart3(){
+
+        $countries=[];
+        $result = [];
+        $jsonurl1 = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
+        $json1 = file_get_contents($jsonurl1);
+        $jsonurl2 = "https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json";
+        $json2 = file_get_contents($jsonurl2);
+        $universities = json_decode($json1);
+        $continents = json_decode($json2);
+        $result=[];
+        foreach($universities as $v)
+        {
+            array_push($countries, $v->country);
+        }
+        $countriesWithCount = array_count_values($countries);
+        $result=[];
+        foreach($continents as $v){
+            $contin = 0;
+            try{
+                $contin = $result[ $v->region ];
+            }
+            catch (\Exception $e){
+                $contin = 0;
+            }
+            try{
+                $value =  $countriesWithCount[ $v->name ];
+                $result[ $v->region ] = $contin + $value ;
+            }
+            catch (\Exception $e){
+                $contin = 0;
+            }
+
+        }
+        $result =  array_slice($result,0,2);
+        $values = $countries = $finalResult = [];
+
+        foreach($result as $key => $data){
+            $finalResult['values'][] = $data;
+            $finalResult['countries'][] = $key;
+        }
+        return $finalResult;
     }
 
     function Table1($name){
@@ -104,6 +160,36 @@ class CountryListController extends Controller
         }
         return $tempData;
     }
+
+    function table3(){
+        $countries=[];
+        $result = [];
+        $jsonurl1 = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
+        $json1 = file_get_contents($jsonurl1);
+        $jsonurl2 = "https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json";
+        $json2 = file_get_contents($jsonurl2);
+        $universities = json_decode($json1);
+        $continents = json_decode($json2, true);
+        $result = array();
+        $tempArray = [];
+        foreach($continents as $key => $v){
+            $name = $v['name'];
+            if($v['region'] == 'Europe'){
+                $result[$name] =  $v['country-code'];
+                array_push($tempArray, $name);
+            }
+        }
+        $tempData = [];
+        foreach($universities as $v)
+        {
+            if(in_array($v->country, $tempArray ) ){
+                $tempData[] = ([ 'country' => $v->country, 'universityName' => $v->name, 'countryCode' => $result[ $v->country ]  ]);
+                // print_r(json_encode($tempData));
+            }
+        }
+        return $tempData;
+    }
+
 
 
 }

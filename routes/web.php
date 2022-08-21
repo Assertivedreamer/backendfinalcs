@@ -20,5 +20,8 @@ Route::get('/', function () {
 
 Route::get('/countries',[CountryListController::class,'Chart1']);
 Route::get('/continents',[CountryListController::class,'Chart2']);
+Route::get('/continents2',[CountryListController::class,'Chart3']);
+
 Route::get('/universities/{name}',[CountryListController::class,'Table1']);
 Route::get('/univeofContinent',[CountryListController::class,'Table2']);
+Route::get('/univeofall',[CountryListController::class,'Table3']);
