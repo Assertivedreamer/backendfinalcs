@@ -11,7 +11,7 @@ class CountryListController extends Controller
         $country=[];
         $jsonurl = "https://raw.githubusercontent.com/Hipo/university-domains-list/master/world_universities_and_domains.json";
         $json = file_get_contents($jsonurl);
-        // var_dump(json_decode($json));
+        //var_dump(json_decode($json));
         $values = json_decode($json);
         // echo(count($values));
         foreach($values as $v){
